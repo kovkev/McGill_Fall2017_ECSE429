@@ -23,6 +23,11 @@ public class App
         System.out.println( "\""
                 + Integer.toString(l.get(2))
                 + "\""
+                + " should be 1."
+        );
+        System.out.println( "\""
+                + Integer.toString(l.get(0))
+                + "\""
                 + " should be 5."
         );
     }
