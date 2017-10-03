@@ -12,9 +12,9 @@ Project Setup
 * Maven - https://maven.apache.org/download.cgi
 
 
-*You can run
+*From the root of this project, you can run*
 
-'mvn install' - installs dependencies
-'mvn package' - packages the project
-'mvn exec:java' - executes the App class
-'mvn package && mvn exec:java' - To package, and, on success, run the code
+* 'mvn install' - installs dependencies
+* 'mvn package' - packages the project
+* 'mvn exec:java' - executes the App class
+* 'mvn package && mvn exec:java' - To package, and, on success, run the code
