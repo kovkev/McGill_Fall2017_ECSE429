@@ -15,9 +15,22 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ChainedClosureTest {
+	
+	static ChainedClosure closureThatDoesNothing;
+	static ChainedClosure<String> closureNotNull;
 
+	@SuppressWarnings("unchecked")
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		closureThatDoesNothing = new ChainedClosure(ClosureUtils.nopClosure());
+		closureNotNull = new ChainedClosure(new Closure()
+		  {
+		    public void execute(Object o){
+		      assert o != null;
+		      System.out.print(o.toString() + " ");
+		    }
+		  }
+		  );
 	}
 
 	@AfterClass
@@ -32,18 +45,8 @@ public class ChainedClosureTest {
 	public void tearDown() throws Exception {
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		ChainedClosure closureThatDoesNothing = new ChainedClosure(ClosureUtils.nopClosure());
-		ChainedClosure<String> closureNotNull = new ChainedClosure(new Closure()
-		  {
-		    public void execute(Object o){
-		      assert o != null;
-		      System.out.print(o.toString() + " ");
-		    }
-		  }
-		  );
 		closureNotNull.execute("Hello");
 	}
 
