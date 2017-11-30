@@ -35,9 +35,8 @@ public class ChainedClosureTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		ChainedClosure cc = new ChainedClosure(ClosureUtils.nopClosure());
-		boolean pass=false;
-		ChainedClosure<String> cd = new ChainedClosure(new Closure()
+		ChainedClosure closureThatDoesNothing = new ChainedClosure(ClosureUtils.nopClosure());
+		ChainedClosure<String> closureNotNull = new ChainedClosure(new Closure()
 		  {
 		    public void execute(Object o){
 		      assert o != null;
@@ -45,7 +44,7 @@ public class ChainedClosureTest {
 		    }
 		  }
 		  );
-		cd.execute("Hello");
+		closureNotNull.execute("Hello");
 	}
 
 }
