@@ -1,7 +1,6 @@
 package org.apache.commons.collections4.bidimap;
 
 import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
