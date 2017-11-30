@@ -2,6 +2,12 @@ package org.apache.commons.collections4.functors;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections4.Closure;
+import org.apache.commons.collections4.ClosureUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,9 +32,20 @@ public class ChainedClosureTest {
 	public void tearDown() throws Exception {
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		ChainedClosure cc = new ChainedClosure(ClosureUtils.nopClosure());
+		boolean pass=false;
+		ChainedClosure<String> cd = new ChainedClosure(new Closure()
+		  {
+		    public void execute(Object o){
+		      assert o != null;
+		      System.out.print(o.toString() + " ");
+		    }
+		  }
+		  );
+		cd.execute("Hello");
 	}
 
 }
