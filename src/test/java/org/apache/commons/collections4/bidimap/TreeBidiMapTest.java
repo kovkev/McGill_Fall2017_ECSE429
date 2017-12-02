@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.security.KeyStore;
 import java.security.KeyStore.Entry;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.zip.ZipEntry;
@@ -21,7 +22,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TreeBidiMapTest {
-
+	TreeBidiMap<String, Integer> tbm_operation;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -30,15 +32,6 @@ public class TreeBidiMapTest {
 	public static void tearDownAfterClass() throws Exception {
 	}
 
-	@Before
-	public void setUp() throws Exception {
-
-
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 
 	@Test
 	public void testMapOrder() {
@@ -185,5 +178,125 @@ public class TreeBidiMapTest {
 		
 		assert ies.size() == 2;
 	}
+	
+	/* White-Box Testing
+	 * (Feel free to add more tests!) 
+	 */
+	
+	@Before
+	public void setUp() throws Exception {
+		tbm_operation = new TreeBidiMap<String, Integer>();
+		tbm_operation.put("One", 1);
+		tbm_operation.put("Two", 2);
+	}
+	
+	@Test
+	public void testContains() {
+		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
+		while(map_iter.hasNext()) {
+			String key = map_iter.next();
+			int value = map_iter.getValue();
+			assertEquals(tbm_operation.containsKey(key), true);
+			assertEquals(tbm_operation.containsValue(value), true);
+		}
+		System.out.println("testContains() Passed");
+	}
+	
+	@Test
+	public void testGetKey() {
+		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
+		while(map_iter.hasNext()) {
+			String key = map_iter.next();
+			int value = map_iter.getValue();
+			assertEquals(key, tbm_operation.getKey(value));
+		}
+		System.out.println("testGetKey() Passed");
+	}
+	
+	@Test
+	public void testFirstKey() {
+		TreeBidiMap<String, Integer> tbm = new TreeBidiMap<String, Integer>();
+		try {
+			tbm.firstKey();
+			fail("Should throw NoSuchElementException");
+		}catch (NoSuchElementException e){
+//			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(), "Map is empty");
+		}
+		String first_key = tbm_operation.firstKey();
+		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
+		int count=0;
+		while(map_iter.hasNext()) {
+			String key = map_iter.next();
+			if(count==0) {
+				assertEquals(key,first_key);
+			}
+			count++;
+		}
+		System.out.println("testFirstKey() Passed");
+	}
+	
+	@Test
+	public void testLastKey() {
+		TreeBidiMap<String, Integer> tbm = new TreeBidiMap<String, Integer>();
+		try {
+			tbm.lastKey();
+			fail("Should throw NoSuchElementException");
+		}catch (NoSuchElementException e){
+//			System.out.println(e.getMessage());
+			assertEquals(e.getMessage(), "Map is empty");
+		}
+		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
+		String last_key = tbm_operation.lastKey();
+		int count=0;
+		while(map_iter.hasNext()) {
+			String key = map_iter.next();
+			if(count==tbm_operation.size()-1) {
+				assertEquals(key,last_key);
+			}
+			count++;
+		}
+		System.out.println("testLastKey() Passed");
+	}
+	
+	@Test
+	public void testNextAndPrevKey() {
+		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
+		String prev_key;
+		String current_key = tbm_operation.firstKey();
+		while(map_iter.hasNext()) {
+			String key = map_iter.next();
+			assertEquals(key, current_key);
+			prev_key=current_key;
+			current_key=tbm_operation.nextKey(key);
+			if(current_key!=null) {
+				assertEquals(prev_key, tbm_operation.previousKey(current_key));	
+			}
+		}
+		System.out.println("testNextAndPrevKey() Passed");
+	}
+	
+	@Test
+	public void testRemove() {
+		int size = tbm_operation.size();
+		tbm_operation.remove("One");
+		assertEquals(tbm_operation.size(), size-1);
+		System.out.println("testRemove() Passed");
+	}
+	
+	@Test
+	public void testRemoveValue() {
+		int size = tbm_operation.size();
+		tbm_operation.removeValue(2);
+		assertEquals(tbm_operation.size(), size-1);
+		System.out.println("testRemoveValue() Passed");
+	}	
+	
+	@After
+	public void tearDown() throws Exception {
+		tbm_operation.clear();
+	}
+	
+	
 }
 
