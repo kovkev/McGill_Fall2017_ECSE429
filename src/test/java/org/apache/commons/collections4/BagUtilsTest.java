@@ -28,7 +28,6 @@ public class BagUtilsTest {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
 	}
 
 }

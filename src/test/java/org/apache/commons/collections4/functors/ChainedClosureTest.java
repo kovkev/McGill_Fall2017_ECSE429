@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections4.Closure;
 import org.apache.commons.collections4.ClosureUtils;
@@ -14,40 +15,62 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import junit.framework.Assert;
+
 public class ChainedClosureTest {
 	
 	static ChainedClosure closureThatDoesNothing;
-	static ChainedClosure<String> closureNotNull;
+	static ChainedClosure closureNotNull;
+	static Closure c;
+	static Closure closures[] = new Closure[2];
+	static ChainedClosure collection;
 
 	@SuppressWarnings("unchecked")
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		closureThatDoesNothing = new ChainedClosure(ClosureUtils.nopClosure());
-		closureNotNull = new ChainedClosure(new Closure()
+		c = new Closure()
 		  {
 		    public void execute(Object o){
 		      assert o != null;
 		      System.out.print(o.toString() + " ");
 		    }
-		  }
-		  );
+		  };
+			
+		closureNotNull = new ChainedClosure(c);
+		closures[0] = c;
+		closures[1] = ClosureUtils.nopClosure();
+		//collection = ChainedClosure.chainedClosure(closures);
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// set all to null?
 	}
 
-	@Before
-	public void setUp() throws Exception {
+	@Test
+	public void testExecute() {
+		closureNotNull.execute("Hello");
 	}
-
-	@After
-	public void tearDown() throws Exception {
+	
+	@Test
+	public void testEmptyClosure() {
+		assertSame(NOPClosure.nopClosure(), ChainedClosure.chainedClosure());
+	}
+	
+	@Test
+	public void testNonEmptyClosure() {
+		assertSame(closureNotNull, ChainedClosure.chainedClosure(c)); // TODO: HOW TO GET THIS TO WORK
+	}
+	
+	@Test
+	public void testGetClosure() {
+		assertSame(c, closureNotNull.getClosures()); // TODO: HOW TO GET THIS TO WORK
+		// or THIS assertSame(new ChainedClosure(c), closureNotNull.getClosures());
 	}
 
 	@Test
 	public void test() {
-		closureNotNull.execute("Hello");
+		// TODO: deal with last method
 	}
-
 }
