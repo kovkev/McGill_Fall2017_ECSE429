@@ -2,9 +2,8 @@ package org.apache.commons.collections4.functors;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.Closure;
 import org.apache.commons.collections4.ClosureUtils;
@@ -19,58 +18,44 @@ import junit.framework.Assert;
 
 public class ChainedClosureTest {
 	
-	static ChainedClosure closureThatDoesNothing;
-	static ChainedClosure closureNotNull;
-	static Closure c;
-	static Closure closures[] = new Closure[2];
-	static ChainedClosure collection;
-
+	Integer myInt;
+	static ChainedClosure<Integer> chained;
+	static Closure<Integer> multiplyByFour;
+	static Closure<Integer> subtractTwo;
+	static List encryption = new ArrayList(2);
+	String output;
+	
 	@SuppressWarnings("unchecked")
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		closureThatDoesNothing = new ChainedClosure(ClosureUtils.nopClosure());
-		c = new Closure()
-		  {
-		    public void execute(Object o){
-		      assert o != null;
-		      System.out.print(o.toString() + " ");
-		    }
-		  };
-			
-		closureNotNull = new ChainedClosure(c);
-		closures[0] = c;
-		closures[1] = ClosureUtils.nopClosure();
-		//collection = ChainedClosure.chainedClosure(closures);
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		// set all to null?
+	
+	@Before
+	public void setRegularClosureConstructor() throws Exception {
+		myInt = 4;
+		multiplyByFour = new Closure<Integer>() {
+			public void execute(Integer i){
+			      output += " " + (4*i);
+			}
+		};
+		output = "" + myInt;
 	}
 
 	@Test
-	public void testExecute() {
-		closureNotNull.execute("Hello");
+	public void testRegularClosureConstructor() {
+		chained = new ChainedClosure<Integer>(multiplyByFour);
+		chained.execute(myInt);
+		assertTrue(output.equals("4 16"));
 	}
 	
-	@Test
-	public void testEmptyClosure() {
-		assertSame(NOPClosure.nopClosure(), ChainedClosure.chainedClosure());
+	@After
+	public void tearRegularClosureConstructor() throws Exception {
+		myInt = null;
+		multiplyByFour = null;
+		subtractTwo = null;
+		chained = null;
+		output = null;
 	}
 	
-	@Test
-	public void testNonEmptyClosure() {
-		assertSame(closureNotNull, ChainedClosure.chainedClosure(c)); // TODO: HOW TO GET THIS TO WORK
-	}
-	
-	@Test
-	public void testGetClosure() {
-		assertSame(c, closureNotNull.getClosures()); // TODO: HOW TO GET THIS TO WORK
-		// or THIS assertSame(new ChainedClosure(c), closureNotNull.getClosures());
-	}
-
-	@Test
-	public void test() {
-		// TODO: deal with last method
-	}
+	// testStaticConstructor
+	// testCollectionConstructor
+	// testGetClosures
 }
+
