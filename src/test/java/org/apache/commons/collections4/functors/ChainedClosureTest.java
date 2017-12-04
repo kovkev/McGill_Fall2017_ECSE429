@@ -18,23 +18,40 @@ import junit.framework.Assert;
 
 public class ChainedClosureTest {
 	
-	Integer myInt;
-	static ChainedClosure<Integer> chained;
+	static Integer myInt;
+	Closure nopClosure;
+	ChainedClosure<Integer> chained;
 	static Closure<Integer> multiplyByFour;
 	static Closure<Integer> subtractTwo;
-	static List encryption = new ArrayList(2);
-	String output;
+	List encryption;
+	static String output;
+	Closure<? super Integer>[] copy;
 	
-	@SuppressWarnings("unchecked")
-	
-	@Before
-	public void setRegularClosureConstructor() throws Exception {
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
 		myInt = 4;
+		output = "";
+		subtractTwo = new Closure<Integer>() {
+			public void execute(Integer i){
+			      output += " " + (i-2);
+			}
+		};
 		multiplyByFour = new Closure<Integer>() {
 			public void execute(Integer i){
 			      output += " " + (4*i);
 			}
 		};
+	}
+	
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		myInt = null;
+		subtractTwo = null;
+		multiplyByFour = null;
+	}
+	
+	@Before
+	public void setRegularClosureConstructor() throws Exception {
 		output = "" + myInt;
 	}
 
@@ -47,15 +64,89 @@ public class ChainedClosureTest {
 	
 	@After
 	public void tearRegularClosureConstructor() throws Exception {
-		myInt = null;
-		multiplyByFour = null;
-		subtractTwo = null;
 		chained = null;
 		output = null;
 	}
 	
-	// testStaticConstructor
-	// testCollectionConstructor
-	// testGetClosures
+	@Before
+	public void setStaticClosureMethod() throws Exception {
+		output = "" + myInt;
+	}
+
+	@Test
+	public void testStaticClosureMethod() {
+		nopClosure = ChainedClosure.chainedClosure();
+		nopClosure.execute(myInt);
+		assertTrue(output.equals("4"));
+		
+		chained = (ChainedClosure<Integer>) ChainedClosure.chainedClosure(subtractTwo);
+		chained.execute(myInt);
+		assertTrue(output.equals("4 2"));
+	}
+	
+	@After
+	public void tearStaticClosureMethod() throws Exception {
+		chained = null;
+		output = null;
+		nopClosure = null;
+	}
+	
+	@Before
+	public void setStaticCollectionConstructorAndGetter() throws Exception {
+		output = "" + myInt;
+		encryption = new ArrayList(2);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testStaticCollectionConstructor() {
+		nopClosure = ChainedClosure.chainedClosure(encryption);
+		nopClosure.execute(myInt);
+		assertTrue(output.equals("4"));
+		
+		encryption.add(multiplyByFour);
+		encryption.add(subtractTwo);
+		chained = (ChainedClosure<Integer>) ChainedClosure.chainedClosure(encryption);
+		chained.execute(myInt);
+		assertTrue(output.equals("4 16 2"));
+		
+		encryption = null;
+		nopClosure = ChainedClosure.chainedClosure(encryption);
+	}
+	
+	@After
+	public void tearStaticCollectionConstructor() throws Exception {
+		chained = null;
+		output = null;
+		encryption = null;
+		nopClosure = null;
+	}
+	
+	@Before
+	public void setGetClosures() throws Exception {
+		encryption = new ArrayList(2);
+	}
+
+	@Test
+	public void testGetClosures() {
+		encryption.add(multiplyByFour);
+		encryption.add(subtractTwo);
+		chained = (ChainedClosure<Integer>) ChainedClosure.chainedClosure(encryption);
+		chained.execute(myInt);
+		assertTrue(output.equals("4 16 2"));
+		
+		output = "" + myInt;
+		copy = chained.getClosures();
+		chained = (ChainedClosure<Integer>) ChainedClosure.chainedClosure(copy);
+		chained.execute(myInt);
+		assertTrue(output.equals("4 16 2"));
+	}
+	
+	@After
+	public void tearGetClosures() throws Exception {
+		chained = null;
+		output = null;
+		encryption = null;
+		copy = null;
+	}
 }
 
