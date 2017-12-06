@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import java.security.KeyStore;
 import java.security.KeyStore.Entry;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -15,6 +17,9 @@ import javax.swing.JApplet;
 
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.OrderedBidiMap;
+import org.apache.commons.collections4.OrderedMapIterator;
+import org.apache.commons.collections4.bidimap.TreeBidiMap.ViewMapIterator;
+import org.apache.commons.collections4.iterators.EmptyOrderedMapIterator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,6 +28,9 @@ import org.junit.Test;
 
 public class TreeBidiMapTest {
 	TreeBidiMap<String, Integer> tbm_operation;
+	TreeBidiMap<String, Integer> tbm_empty;
+	OrderedBidiMap<Integer, String> inverseBDM;
+	OrderedBidiMap<Integer, String> inverseEmptyBDM;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -188,10 +196,30 @@ public class TreeBidiMapTest {
 		tbm_operation = new TreeBidiMap<String, Integer>();
 		tbm_operation.put("One", 1);
 		tbm_operation.put("Two", 2);
+		tbm_empty = new TreeBidiMap<String, Integer>();
+		inverseBDM = tbm_operation.inverseBidiMap();
+		inverseEmptyBDM = tbm_empty.inverseBidiMap();
+	}
+	
+//	@Test
+//	public void testInverseBidimap() {
+//		OrderedBidiMap<Integer, String> inverseBDM = tbm_operation.inverseBidiMap();
+//		OrderedBidiMap<Integer, String> inverseEmptyBDM = tbm_empty.inverseBidiMap();
+//	}
+	
+	@Test
+	public void testMapIterator() {
+		assertEquals(tbm_operation.mapIterator().getClass(), ViewMapIterator.class);
+		assertEquals(tbm_empty.mapIterator().getClass(), EmptyOrderedMapIterator.class);
 	}
 	
 	@Test
 	public void testContains() {
+		//Empty TreeBidiMap
+		assertEquals(tbm_empty.containsKey("Dummy"), false);
+		assertEquals(tbm_empty.containsValue(1), false);
+		
+		//Non-empty TreeBidiMap
 		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
 		while(map_iter.hasNext()) {
 			String key = map_iter.next();
@@ -199,30 +227,45 @@ public class TreeBidiMapTest {
 			assertEquals(tbm_operation.containsKey(key), true);
 			assertEquals(tbm_operation.containsValue(value), true);
 		}
+		
+		//Inverse TreeBidiMap
+		
+		
 		System.out.println("testContains() Passed");
 	}
 	
 	@Test
 	public void testGetKey() {
+		//Empty TreeBidiMap
+		String key2 = tbm_empty.getKey("Dummy");
+		assertEquals(key2, null);
+		
+		//Non-empty TreeBidiMap
 		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
 		while(map_iter.hasNext()) {
 			String key = map_iter.next();
 			int value = map_iter.getValue();
 			assertEquals(key, tbm_operation.getKey(value));
 		}
+		
+		//Inverse TreeBidiMap
+		
+		
+		
 		System.out.println("testGetKey() Passed");
 	}
 	
 	@Test
 	public void testFirstKey() {
-		TreeBidiMap<String, Integer> tbm = new TreeBidiMap<String, Integer>();
+		//Empty TreeBidiMap
 		try {
-			tbm.firstKey();
+			tbm_empty.firstKey();
 			fail("Should throw NoSuchElementException");
 		}catch (NoSuchElementException e){
 //			System.out.println(e.getMessage());
 			assertEquals(e.getMessage(), "Map is empty");
 		}
+		//Non-empty TreeBidiMap
 		String first_key = tbm_operation.firstKey();
 		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
 		int count=0;
@@ -233,19 +276,25 @@ public class TreeBidiMapTest {
 			}
 			count++;
 		}
+		
+		//Inverse TreeBidiMap
+		
+		
+		
 		System.out.println("testFirstKey() Passed");
 	}
 	
 	@Test
 	public void testLastKey() {
-		TreeBidiMap<String, Integer> tbm = new TreeBidiMap<String, Integer>();
+		//Empty TreeBidiMap
 		try {
-			tbm.lastKey();
+			tbm_empty.lastKey();
 			fail("Should throw NoSuchElementException");
 		}catch (NoSuchElementException e){
 //			System.out.println(e.getMessage());
 			assertEquals(e.getMessage(), "Map is empty");
 		}
+		//Non-empty TreeBidiMap
 		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
 		String last_key = tbm_operation.lastKey();
 		int count=0;
@@ -256,11 +305,21 @@ public class TreeBidiMapTest {
 			}
 			count++;
 		}
+		
+		//Inverse TreeBidiMap
+		
+		
+		
 		System.out.println("testLastKey() Passed");
 	}
 	
 	@Test
 	public void testNextAndPrevKey() {
+		//Empty TreeBidiMap
+		assertEquals(tbm_empty.nextKey("Dummy"), null);
+		assertEquals(tbm_empty.previousKey("Dummy"), null);
+		
+		//Non-empty TreeBidiMap
 		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
 		String prev_key;
 		String current_key = tbm_operation.firstKey();
@@ -273,28 +332,84 @@ public class TreeBidiMapTest {
 				assertEquals(prev_key, tbm_operation.previousKey(current_key));	
 			}
 		}
+		
+		//Inverse TreeBidiMap
+		
+		
+		
 		System.out.println("testNextAndPrevKey() Passed");
 	}
 	
 	@Test
+	public void testEquals() {
+		TreeBidiMap<String, Integer> dummy = new TreeBidiMap<String, Integer>();
+		TreeBidiMap<String, Integer> dummy2 = new TreeBidiMap<String, Integer>();
+		TreeBidiMap<String, Integer> dummy3 = new TreeBidiMap<String, Integer>();
+		TreeBidiMap<String, Integer> dummy4 = tbm_operation;
+		MapIterator<String, Integer> map_iter = tbm_operation.mapIterator();
+		
+		dummy2.put("DUMMY", 5);
+		dummy2.put("DUMMY+", 6);
+		dummy3.put("One", 1);
+		dummy3.put("Two", 2);
+		
+		//False
+		assertEquals(tbm_empty.equals(tbm_operation), false);
+		assertEquals(tbm_operation.equals(tbm_empty), false);
+		assertEquals(tbm_operation.equals(map_iter), false);
+		assertEquals(tbm_operation.equals(dummy2), false);
+		
+		//True
+		assertEquals(tbm_empty.equals(dummy), true);
+		assertEquals(tbm_operation.equals(dummy3), true);
+		assertEquals(tbm_operation.equals(dummy4), true);
+		
+		
+	}
+	
+	
+	@Test
 	public void testRemove() {
+		//Empty TreeBidiMap
+		tbm_empty.remove("Dummy");
+		assertEquals(tbm_empty.size(),0);
+		
+		//Non-empty TreeBidiMap
 		int size = tbm_operation.size();
 		tbm_operation.remove("One");
 		assertEquals(tbm_operation.size(), size-1);
+		
+		//Inverse TreeBidiMap
+
+		
 		System.out.println("testRemove() Passed");
 	}
 	
 	@Test
 	public void testRemoveValue() {
+		//Empty TreeBidiMap
+		tbm_empty.removeValue(1);
+		assertEquals(tbm_empty.size(),0);
+		
+		//Non-empty TreeBidiMap
 		int size = tbm_operation.size();
 		tbm_operation.removeValue(2);
 		assertEquals(tbm_operation.size(), size-1);
+		
+		//Inverse TreeBidiMap
+		
+		
 		System.out.println("testRemoveValue() Passed");
 	}	
+	
 	
 	@After
 	public void tearDown() throws Exception {
 		tbm_operation.clear();
+		tbm_empty.clear();
+		inverseBDM.clear();
+		inverseEmptyBDM.clear();
+		
 	}
 	
 	
