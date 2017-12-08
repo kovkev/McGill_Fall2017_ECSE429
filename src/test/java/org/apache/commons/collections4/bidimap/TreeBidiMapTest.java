@@ -773,21 +773,21 @@ public class TreeBidiMapTest {
 		TreeBidiMap<String, Integer> dummy = getRandomTBM();
 		Set<java.util.Map.Entry<String, Integer>> es = dummy.entrySet();
 		
-		Map.Entry<String,Integer> entry =
-			    new AbstractMap.SimpleEntry<String, Integer>("3", 3);
 		
-		es.contains(1);
-		es.contains("2");
+		int value = dummy.get("3");
+		Map.Entry<String,Integer> entry =
+			    new AbstractMap.SimpleEntry<String, Integer>("3", value);
+		
 		assertTrue(es.contains(entry));
 		es.remove(entry);
 		
+		int rvalue = dummy.get("4");
 		Set<java.util.Map.Entry<Integer, String>> se = dummy.inverseBidiMap().entrySet();
 		Map.Entry<Integer, String> yrtne =
-			    new AbstractMap.SimpleEntry<Integer, String>(3, "3");
+			    new AbstractMap.SimpleEntry<Integer, String>(rvalue, "4");
 		
 		assertTrue(se.contains(yrtne));
 		se.remove(yrtne);
-		
 	}
 	
 	TreeBidiMap<String, Integer> getRandomTBM() {
@@ -801,7 +801,7 @@ public class TreeBidiMapTest {
 		for (int j = 0; j < 10000; ++j) {
 			int i = order.get(j);
 			
-			String key = Integer.toString(j);
+			String key = Integer.toString(i);
 			
 			dummy.put(key, i);
 		}
