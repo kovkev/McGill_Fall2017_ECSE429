@@ -2,8 +2,11 @@ package org.apache.commons.collections4.bidimap;
 
 import static org.junit.Assert.*;
 
+import java.awt.List;
 import java.security.KeyStore;
 import java.security.KeyStore.Entry;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -497,6 +500,71 @@ public class TreeBidiMapTest {
 		//System.out.println("testRemoveValue() Passed");
 	}
 	
+	@Test
+	public void testRebalance() {
+		TreeBidiMap<String, Integer> dummy = new TreeBidiMap<String, Integer>();
+		for (int i = 0; i < 1000 ; ++i) {
+			String key = Integer.toString(i);
+			dummy.put(key, i);
+		}
+		
+		for (int i = 0; i < 1000 ; ++i) {
+			String key = Integer.toString(i);
+			dummy.remove(key);
+		}
+		
+		for (int i = 0; i < 1000 ; ++i) {
+			String key = Integer.toString(i);
+			dummy.put(key, i);
+		}
+		
+		for (int i = 0; i < 1000 ; ++i) {
+			int j = 1000 - 1 - i;
+			String key = Integer.toString(j);
+			dummy.remove(key);
+		}
+	}
+	
+	@Test
+	public void testRandomInserts() {
+		TreeBidiMap<String, Integer> dummy = new TreeBidiMap<String, Integer>();
+		
+		ArrayList<Integer> order = new ArrayList<Integer>();
+		for (int i = 0; i < 10000; ++i){
+			order.add(i);
+		}
+		Collections.shuffle(order);
+		for (int j = 0; j < 10000; ++j) {
+			int i = order.get(j);
+			
+			String key = Integer.toString(j);
+			
+			dummy.put(key, i);
+		}
+		
+		Collections.shuffle(order);
+		
+		for (int j = 0; j < 10000; ++j) {
+			int i = order.get(j);
+			
+			String key = Integer.toString(j);
+			
+			dummy.remove(key);
+		}
+	}
+	
+	@Test
+	public void testDoToString() {
+		TreeBidiMap<String, Integer> dummy = new TreeBidiMap<String, Integer>();
+		for (int i = 0; i < 100 ; ++i) {
+			String key = Integer.toString(i);
+			dummy.put(key, i);
+		}
+		
+		dummy.toString();
+	}
+	
+	
 	
 	@After
 	public void tearDown() throws Exception {
@@ -506,6 +574,8 @@ public class TreeBidiMapTest {
 		inverseEmptyBDM.clear();
 		//view.clear();
 	}
+	
+	
 	
 	
 }
