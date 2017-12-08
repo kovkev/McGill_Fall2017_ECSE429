@@ -32,7 +32,6 @@ public class TreeBidiMapTest {
 	TreeBidiMap<String, Integer> tbm_empty;
 	OrderedBidiMap<Integer, String> inverseBDM;
 	OrderedBidiMap<Integer, String> inverseEmptyBDM;
-	View view;
 
 	/* Integration Testing here
 	 * White-box testing below (look for white-box testing comment)
@@ -208,6 +207,7 @@ public class TreeBidiMapTest {
 		
 		assert !iter.hasNext();
 		assert !i_iter.hasNext();
+		
 	}
 	
 	@Before
@@ -466,16 +466,31 @@ public class TreeBidiMapTest {
 	@Test
 	public void testRemove() {
 		//Empty TreeBidiMap
-		tbm_empty.remove("Dummy");
+		Integer isNull = tbm_empty.remove("One");
+		assertNull(isNull);
 		assertEquals(tbm_empty.size(),0);
 		
 		//Non-empty TreeBidiMap
 		int size = tbm_operation.size();
-		tbm_operation.remove("One");
+	    Integer key = tbm_operation.remove("Two");
+	    assertFalse(tbm_operation.containsKey("Two"));
+	    assertFalse(tbm_operation.containsValue(2));
+	    assertTrue(key == 2);
 		assertEquals(tbm_operation.size(), size-1);
 		
-		//Inverse TreeBidiMap
-
+		//Empty InverseTreeBidiMap
+		String isNull2 = inverseEmptyBDM.remove(1);
+		assertNull(isNull2);
+		assertEquals(inverseEmptyBDM.size(),0);
+		
+		//Non-empty TreeBidiMap
+		size = inverseBDM.size();
+	    String key2 = inverseBDM.remove(1);
+	    assertFalse(inverseBDM.containsKey(1));
+	    assertFalse(inverseBDM.containsValue("One"));
+	    assertEquals(key2, "One");
+		assertEquals(inverseBDM.size(), size-1);
+		
 		
 		//System.out.println("testRemove() Passed");
 	}
@@ -483,16 +498,30 @@ public class TreeBidiMapTest {
 	@Test
 	public void testRemoveValue() {
 		//Empty TreeBidiMap
-		tbm_empty.removeValue(1);
+		String isNull = tbm_empty.removeValue(1);
+		assertNull(isNull);
 		assertEquals(tbm_empty.size(),0);
 		
 		//Non-empty TreeBidiMap
 		int size = tbm_operation.size();
-		tbm_operation.removeValue(2);
+	    String key = tbm_operation.removeValue(2);
+	    assertFalse(tbm_operation.containsKey("Two"));
+	    assertFalse(tbm_operation.containsValue(2));
+	    assertEquals(key, "Two");
 		assertEquals(tbm_operation.size(), size-1);
 		
-		//Inverse TreeBidiMap
+		//Empty InverseTreeBidiMap
+		Integer isNull2 = inverseEmptyBDM.removeValue(1);
+		assertNull(isNull2);
+		assertEquals(inverseEmptyBDM.size(),0);
 		
+		//Non-empty TreeBidiMap
+		size = inverseBDM.size();
+	    Integer key2 = inverseBDM.removeValue("One");
+	    assertFalse(inverseBDM.containsKey(1));
+	    assertFalse(inverseBDM.containsValue("One"));
+	    assertTrue(key2 == 1);
+		assertEquals(inverseBDM.size(), size-1);
 		
 		//System.out.println("testRemoveValue() Passed");
 	}
@@ -504,7 +533,6 @@ public class TreeBidiMapTest {
 		tbm_empty.clear();
 		inverseBDM.clear();
 		inverseEmptyBDM.clear();
-		//view.clear();
 	}
 	
 	

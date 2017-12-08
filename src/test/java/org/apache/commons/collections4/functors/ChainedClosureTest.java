@@ -53,6 +53,16 @@ public class ChainedClosureTest {
 	@Before
 	public void setRegularClosureConstructor() throws Exception {
 		output = "" + myInt;
+		encryption = new ArrayList(2);
+	}
+	
+	@After
+	public void tearGetClosures() throws Exception {
+		chained = null;
+		output = null;
+		encryption = null;
+		nopClosure = null;
+		copy = null;
 	}
 
 	@Test
@@ -60,17 +70,6 @@ public class ChainedClosureTest {
 		chained = new ChainedClosure<Integer>(multiplyByFour);
 		chained.execute(myInt);
 		assertTrue(output.equals("4 16"));
-	}
-	
-	@After
-	public void tearRegularClosureConstructor() throws Exception {
-		chained = null;
-		output = null;
-	}
-	
-	@Before
-	public void setStaticClosureMethod() throws Exception {
-		output = "" + myInt;
 	}
 
 	@Test
@@ -82,19 +81,6 @@ public class ChainedClosureTest {
 		chained = (ChainedClosure<Integer>) ChainedClosure.chainedClosure(subtractTwo);
 		chained.execute(myInt);
 		assertTrue(output.equals("4 2"));
-	}
-	
-	@After
-	public void tearStaticClosureMethod() throws Exception {
-		chained = null;
-		output = null;
-		nopClosure = null;
-	}
-	
-	@Before
-	public void setStaticCollectionConstructorAndGetter() throws Exception {
-		output = "" + myInt;
-		encryption = new ArrayList(2);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -112,19 +98,6 @@ public class ChainedClosureTest {
 		encryption = null;
 		nopClosure = ChainedClosure.chainedClosure(encryption);
 	}
-	
-	@After
-	public void tearStaticCollectionConstructor() throws Exception {
-		chained = null;
-		output = null;
-		encryption = null;
-		nopClosure = null;
-	}
-	
-	@Before
-	public void setGetClosures() throws Exception {
-		encryption = new ArrayList(2);
-	}
 
 	@Test
 	public void testGetClosures() {
@@ -139,14 +112,6 @@ public class ChainedClosureTest {
 		chained = (ChainedClosure<Integer>) ChainedClosure.chainedClosure(copy);
 		chained.execute(myInt);
 		assertTrue(output.equals("4 16 2"));
-	}
-	
-	@After
-	public void tearGetClosures() throws Exception {
-		chained = null;
-		output = null;
-		encryption = null;
-		copy = null;
 	}
 }
 
