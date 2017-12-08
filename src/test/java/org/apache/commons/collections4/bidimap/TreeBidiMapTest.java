@@ -663,6 +663,91 @@ public class TreeBidiMapTest {
 		dummy.toString();
 	}
 	
+	@Test
+	public void testKeyView() {
+		tbm_operation.put("AAA", 0);
+		tbm_operation.put("ZZZ", 99);
+		
+		Set<String> s = tbm_operation.keySet();
+		Iterator<String> itr = s.iterator();
+		String first = "AAA"; // assert that first is "aaa" and not "One"
+		String current = itr.next();
+		assertEquals(current, first);
+		while (itr.hasNext()) {
+			assertTrue(s.contains(itr.next()));
+		}
+		assertFalse(s.contains("abc"));
+		assertFalse(s.remove("abc"));
+		
+		s.remove("AAA");
+		assertTrue(s.size() == 3);
+	}
+	
+	@Test
+	public void testValueView() {
+		tbm_operation.put("AAA", 0);
+		tbm_operation.put("ZZZ", 99);
+		
+		Set<Integer> s = tbm_operation.values();
+		Iterator<Integer> itr = s.iterator();
+		Integer first = 0; // assert that first 0 and not 1
+		Integer current = itr.next();
+		assertEquals(current, first);
+		while (itr.hasNext()) {
+			assertTrue(s.contains(itr.next()));
+		}
+		assertFalse(s.contains(4));
+		assertFalse(s.remove(4));
+		
+		s.remove(0);
+		assertTrue(s.size() == 3);
+	}
+	
+	@Test
+	public void testInverseKeyView() {
+		inverseBDM.put(0, "AAA");
+		inverseBDM.put(99, "ZZZ");
+		
+		Set<Integer> s = inverseBDM.keySet();
+		Iterator<Integer> itr = s.iterator();
+		Integer first = 0; // assert that first 0 and not 1
+		Integer current = itr.next();
+		assertEquals(current, first);
+		while (itr.hasNext()) {
+			assertTrue(s.contains(itr.next()));
+		}
+		assertFalse(s.contains(4));
+		assertFalse(s.remove(4));
+		
+		s.remove(0);
+		assertTrue(s.size() == 3);
+	}
+	
+	@Test
+	public void testInverseValueView() {
+		inverseBDM.put(0, "AAA");
+		inverseBDM.put(99, "ZZZ");
+		
+		Set<String> s = inverseBDM.values();
+		Iterator<String> itr = s.iterator();
+		String first = "AAA"; // assert that first is "aaa" and not "One"
+		String current = itr.next();
+		assertEquals(current, first);
+		while (itr.hasNext()) {
+			assertTrue(s.contains(itr.next()));
+		}
+		assertFalse(s.contains("abc"));
+		assertFalse(s.remove("abc"));
+		
+		s.remove("AAA");
+		assertTrue(s.size() == 3);
+	}
+	
+	@Test
+	public void testValues() {
+		
+	}
+	
 	
 	@Test
 	public void testPutAll() {
