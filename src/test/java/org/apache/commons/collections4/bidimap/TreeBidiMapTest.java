@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.awt.List;
 import java.security.KeyStore;
 import java.security.KeyStore.Entry;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,11 +74,26 @@ public class TreeBidiMapTest {
 		tbm.put(c1, 3);
 		tbm.put(z, 0);
 		
+		
 		MapIterator<Node, Integer> mapiter = tbm.mapIterator();
 		Integer count = 0;
 		
+		try{ 
+			mapiter.getValue();
+			assertTrue(false);
+		} catch(IllegalStateException e){ 
+		    // all good
+		}
+		try{ 
+			mapiter.getKey();
+			assertTrue(false);
+		} catch(IllegalStateException e){ 
+		    // all good
+		}
+		
 		while(mapiter.hasNext()){
-			Node c = mapiter.next();
+			mapiter.next();
+			Node c = mapiter.getKey();
 			Integer i = mapiter.getValue();
 			
 			// mapiter.setValue(i + 10);
@@ -105,8 +121,22 @@ public class TreeBidiMapTest {
 		MapIterator<Integer, Node> mi = ibm.mapIterator();
 		
 		count = 0;
+		try{ 
+			mi.getValue();
+			assertTrue(false);
+		} catch(IllegalStateException e){ 
+		    // all good
+		}
+		try{ 
+			mi.getKey();
+			assertTrue(false);
+		} catch(IllegalStateException e){ 
+		    // all good
+		}
+		
 		while (mi.hasNext()) {
-			Integer i = mi.next();
+			mi.next();
+			Integer i = mi.getKey();
 			Node c = mi.getValue();
 			
 			//System.out.println(c.value);
@@ -628,9 +658,71 @@ public class TreeBidiMapTest {
 		}
 		
 		dummy.toString();
+		
+		dummy = new TreeBidiMap<String, Integer>();
+		dummy.toString();
 	}
 	
 	
+	@Test
+	public void testPutAll() {
+		TreeBidiMap<String, Integer> dummy = new TreeBidiMap<String, Integer>();
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("foo",  1);
+		map.put("bar", 2);
+		dummy.putAll(map);
+		assertTrue(dummy.get("foo") == 1);
+	}
+	
+	@Test
+	public void testViewIterator() {
+		TreeBidiMap<String, Integer> dummy = getRandomTBM();
+		
+		Set<java.util.Map.Entry<String, Integer>> es = dummy.entrySet();
+		
+		es.remove("1");
+	}
+	
+	@Test
+	public void testInverseEntryView() {
+		TreeBidiMap<String, Integer> dummy = getRandomTBM();
+		Set<java.util.Map.Entry<String, Integer>> es = dummy.entrySet();
+		
+		Map.Entry<String,Integer> entry =
+			    new AbstractMap.SimpleEntry<String, Integer>("3", 3);
+		
+		es.contains(1);
+		es.contains("2");
+		assertTrue(es.contains(entry));
+		es.remove(entry);
+		
+		Set<java.util.Map.Entry<Integer, String>> se = dummy.inverseBidiMap().entrySet();
+		Map.Entry<Integer, String> yrtne =
+			    new AbstractMap.SimpleEntry<Integer, String>(3, "3");
+		
+		assertTrue(se.contains(yrtne));
+		se.remove(yrtne);
+		
+	}
+	
+	TreeBidiMap<String, Integer> getRandomTBM() {
+		TreeBidiMap<String, Integer> dummy = new TreeBidiMap<String, Integer>();
+		
+		ArrayList<Integer> order = new ArrayList<Integer>();
+		for (int i = 0; i < 10000; ++i){
+			order.add(i);
+		}
+		Collections.shuffle(order);
+		for (int j = 0; j < 10000; ++j) {
+			int i = order.get(j);
+			
+			String key = Integer.toString(j);
+			
+			dummy.put(key, i);
+		}
+		
+		return dummy;
+	}
 	
 	@After
 	public void tearDown() throws Exception {
