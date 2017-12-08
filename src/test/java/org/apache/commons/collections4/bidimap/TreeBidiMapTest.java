@@ -711,8 +711,17 @@ public class TreeBidiMapTest {
 	}
 	
 	@Test
-	public void testValues() {
-		
+	public void testHashCode() {
+		Integer empty = tbm_empty.hashCode();
+		Integer h = tbm_operation.hashCode();
+		assertNotEquals(h, empty);
+	}
+	
+	@Test
+	public void testInverseHashCode() {
+		Integer empty = inverseEmptyBDM.hashCode();
+		Integer h = inverseBDM.hashCode();
+		assertNotEquals(h, empty);
 	}
 	
 	
